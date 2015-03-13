@@ -35,8 +35,8 @@ BasicGame.Boot.prototype = {
 
     if (this.game.device.desktop) {
     } else {            
-      this.scale.forceOrientation(true, false);
-      //this.scale.forceOrientation(false, true);
+      //this.scale.forceOrientation(true, false);
+      this.scale.forceOrientation(false, true);
       //this.scale.maxHeight = 800;
       this.scale.enterIncorrectOrientation
         .add(this.enterIncorrectOrientation, this);
