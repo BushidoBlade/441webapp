@@ -1,0 +1,17 @@
+{
+  "name": "cse441",
+  "version": "1.0.0",
+  "description": "invaders",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/isaacs/npm.git"
+  },
+  "dependencies": {
+    "pg": "3.4.1",
+    "st": "0.5.1"
+  },
+  "engines": {
+     "node": "0.10.28",
+     "npm": "1.4.9"
+  }
+}
