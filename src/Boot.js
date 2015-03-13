@@ -28,10 +28,10 @@ BasicGame.Boot.prototype = {
     this.stage.disableVisibilityChange = true;
     this.stage.backgroundColor = '#336699';
 
-    //this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    //this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-    this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
-    this.scale.fullScreenScaleMode = Phaser.ScaleManager.RESIZE;
+    this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+    //this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
+    //this.scale.fullScreenScaleMode = Phaser.ScaleManager.RESIZE;
 
     if (this.game.device.desktop) {
     } else {            
