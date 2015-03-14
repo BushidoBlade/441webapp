@@ -61,6 +61,8 @@ BasicGame.Game = function (game) {
   this.alientweenspeed = 0;
   this.aliendescendspeed = 0;
 
+  this.screenbounds;
+
 };
 
 
@@ -100,6 +102,8 @@ BasicGame.Game.prototype = {
     this.physics.enable(this.player, Phaser.Physics.ARCADE);
     this.player.inputEnabled = true;
     this.player.input.enableDrag();
+    this.screenbounds = new Phaser.Rectangle(20, 20, this.game.width-8, this.game.height-8);
+    this.player.input.boundsRect = this.screenbounds;
     this.player.events.onDragStart.add(this.onDragStart, this);
     this.player.events.onDragStop.add(this.onDragStop, this);
 
@@ -209,7 +213,7 @@ BasicGame.Game.prototype = {
 
     if (this.player.alive)
     {
-      //  Reset the this.player, then check for movement keys
+      //  Reset the player, then check for movement keys
       this.player.body.velocity.setTo(0, 0);
 
       if (this.cursors.left.isDown)
@@ -444,6 +448,8 @@ BasicGame.Game.prototype = {
 
     //  Revives the this.player
     this.player.revive();
+    this.player.x = 400;
+    this.player.y = 500;
 
     //  Hides the text
     this.stateText.visible = false;
