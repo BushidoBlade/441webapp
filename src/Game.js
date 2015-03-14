@@ -72,7 +72,7 @@ BasicGame.Game = function (game) {
   this.playerybounds_lower = false;
 
   // control variable for offscreen enemy check
-  this.alienskilled = false;
+  this.offscreenEnemiesCheck = true;
 
 };
 
@@ -267,7 +267,7 @@ BasicGame.Game.prototype = {
       
     }
       // see if all enemies offscreen
-      if (!this.alienskilled)
+      if (this.offscreenEnemiesCheck)
         this.checkenemybounds();
 
   },
@@ -312,6 +312,9 @@ BasicGame.Game.prototype = {
       this.stateText.text=" GAME OVER \n Click to restart";
       this.stateText.visible = true;
 
+      // stop futher offscreen checks
+      this.offscreenEnemiesCheck = false;
+
       //  The "click to restart" handler
       this.input.onTap.addOnce(this.restart,this);
     }
@@ -355,9 +358,14 @@ BasicGame.Game.prototype = {
     {
       this.player.kill();
       this.enemybullets.callAll('kill');
+
+      this.playerlosesound.play();
       
       this.stateText.text=" GAME OVER \n Click to restart";
       this.stateText.visible = true;
+
+      // stop futher offscreen checks
+      this.offscreenEnemiesCheck = false;
 
       //  The "click to restart" handler
       this.input.onTap.addOnce(this.restart,this);
@@ -397,7 +405,7 @@ BasicGame.Game.prototype = {
       this.alientweenspeed -= 200;
       this.aliendescendspeed += 5;
 
-      this.alienskilled = true;
+      this.offscreenEnemiesCheck = false;
 
       //  The "click to restart" handler
       this.input.onTap.addOnce(this.restart,this);
@@ -433,6 +441,9 @@ BasicGame.Game.prototype = {
 
       this.stateText.text=" GAME OVER \n Click to restart";
       this.stateText.visible = true;
+
+      // stop futher offscreen checks
+      this.offscreenEnemiesCheck = false;
 
       //  The "click to restart" handler
       this.input.onTap.addOnce(this.restart,this);
@@ -511,15 +522,20 @@ BasicGame.Game.prototype = {
     this.bullets.callAll('kill');
 
     //  Revives the player
+    this.player.revive();
+
+    // resets player position
     this.player.x = 400;
     this.player.y = 500;
-    this.player.revive();
 
     //  And brings the this.aliens back from the dead :)
     this.aliens.removeAll();
     this.createaliens();
     this.aliens.setAll('outOfBoundsKill', true);
     this.aliens.setAll('checkWorldBounds', true);
+
+    // reset control variable
+    this.offscreenEnemiesCheck = true;
 
     //  Hides the text
     this.stateText.visible = false;
