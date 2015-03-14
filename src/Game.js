@@ -71,6 +71,9 @@ BasicGame.Game = function (game) {
   this.playerybounds_upper = false;
   this.playerybounds_lower = false;
 
+  // control variable for offscreen enemy check
+  this.alienskilled = false;
+
 };
 
 
@@ -119,8 +122,9 @@ BasicGame.Game.prototype = {
     this.aliens = this.add.group();
     this.aliens.enableBody = true;
     this.aliens.physicsBodyType = Phaser.Physics.ARCADE;
-
     this.createaliens();
+    this.aliens.setAll('outOfBoundsKill', true);
+    this.aliens.setAll('checkWorldBounds', true);
 
     //  The this.score
     this.scoreString = 'score : ';
@@ -224,7 +228,8 @@ BasicGame.Game.prototype = {
 
       //  Reset the player, then check for movement keys
       this.player.body.velocity.setTo(0, 0);
-      this.checkbounds();
+
+      this.checkplayerbounds();
 
       if (this.cursors.left.isDown && this.playerxbounds_left)
       {
@@ -259,16 +264,15 @@ BasicGame.Game.prototype = {
       this.physics.arcade.overlap(this.bullets, this.aliens, this.collisionHandler, null, this);
       this.physics.arcade.overlap(this.enemybullets, this.player, this.enemyHitsplayer, null, this);
       this.physics.arcade.overlap(this.aliens, this.player, this.enemyCollideplayer, null, this);
+      
     }
-
-
-
-
-      console.log(this.player.y);
+      // see if all enemies offscreen
+      if (!this.alienskilled)
+        this.checkenemybounds();
 
   },
 
-  checkbounds: function () {
+  checkplayerbounds: function () {
 
     // keeps the player in the game world
 
@@ -292,7 +296,26 @@ BasicGame.Game.prototype = {
     else 
       this.playerybounds_lower = true;
 
+  },
 
+  checkenemybounds: function () {
+
+    // if all enemies offscreen before player kills them, player loses
+
+    if (this.aliens.countLiving() == 0)
+    {
+      this.player.kill();
+      this.enemybullets.callAll('kill');
+      
+      this.playerlosesound.play();
+
+      this.stateText.text=" GAME OVER \n Click to restart";
+      this.stateText.visible = true;
+
+      //  The "click to restart" handler
+      this.input.onTap.addOnce(this.restart,this);
+    }
+    
   },
 
   onDragStart: function (player, pointer) {
@@ -327,7 +350,7 @@ BasicGame.Game.prototype = {
       live.kill();
     }
 
-    //  If this collision killed the this.player
+    //  If this collision killed the player
     if (this.lives.countLiving() < 1)
     {
       this.player.kill();
@@ -374,8 +397,11 @@ BasicGame.Game.prototype = {
       this.alientweenspeed -= 200;
       this.aliendescendspeed += 5;
 
+      this.alienskilled = true;
+
       //  The "click to restart" handler
       this.input.onTap.addOnce(this.restart,this);
+
     }
 
   },
@@ -484,14 +510,16 @@ BasicGame.Game.prototype = {
     // fixes persisting player bullets
     this.bullets.callAll('kill');
 
+    //  Revives the player
+    this.player.x = 400;
+    this.player.y = 500;
+    this.player.revive();
+
     //  And brings the this.aliens back from the dead :)
     this.aliens.removeAll();
     this.createaliens();
-
-    //  Revives the this.player
-    this.player.revive();
-    this.player.x = 400;
-    this.player.y = 500;
+    this.aliens.setAll('outOfBoundsKill', true);
+    this.aliens.setAll('checkWorldBounds', true);
 
     //  Hides the text
     this.stateText.visible = false;
