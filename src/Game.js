@@ -214,7 +214,7 @@ BasicGame.Game.prototype = {
 
   descend: function () {
 
-    this.aliens.y += 200 + this.aliendescendspeed;
+    this.aliens.y += 10 + this.aliendescendspeed;
 
   },
 
