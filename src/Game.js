@@ -214,7 +214,7 @@ BasicGame.Game.prototype = {
 
   descend: function () {
 
-    this.aliens.y += 10 + this.aliendescendspeed;
+    this.aliens.y += 200 + this.aliendescendspeed;
 
   },
 
@@ -521,12 +521,9 @@ BasicGame.Game.prototype = {
     // fixes persisting player bullets
     this.bullets.callAll('kill');
 
-    //  Revives the player
-    this.player.revive();
-
-    // resets player position
-    this.player.x = 400;
-    this.player.y = 500;
+ 
+    // resets player position and sets alive, exists, visible and renderable all to true
+    this.player.reset(400, 500);
 
     //  And brings the this.aliens back from the dead :)
     this.aliens.removeAll();
