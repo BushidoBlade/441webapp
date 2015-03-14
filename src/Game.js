@@ -62,7 +62,10 @@ BasicGame.Game = function (game) {
   this.alientweenspeed = 0;
   this.aliendescendspeed = 0;
 
+  // screen bounds for dragging
   this.screenbounds;
+
+  // screen bounds for keyboard
   this.playerxbounds_left = false;
   this.playerxbounds_right = false;
   this.playerybounds_upper = false;
@@ -266,6 +269,8 @@ BasicGame.Game.prototype = {
   },
 
   checkbounds: function () {
+
+    // keeps the player in the game world
 
     if(this.player.x <= 20)
       this.playerxbounds_left = false;
