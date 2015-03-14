@@ -151,13 +151,13 @@ BasicGame.Game.prototype = {
 
     // background music
     this.backgroundmusic = this.add.audio('music');
-    this.backgroundmusic.play('', 0, 0.5, true);
+    this.backgroundmusic.play('', 0, 0.2, true);
 
     // sound effects
-    this.bulletsound = this.add.audio('enemyfireaudio', 0.5);
-    this.lasersound = this.add.audio('playerfireaudio', 0.4);
-    this.playerlosesound = this.add.audio('playerdeathaudio', 0.9);
-    this.playerwinsound = this.add.audio('victorysound');
+    this.bulletsound = this.add.audio('enemyfireaudio', 0.2);
+    this.lasersound = this.add.audio('playerfireaudio', 0.2);
+    this.playerlosesound = this.add.audio('playerdeathaudio', 0.7);
+    this.playerwinsound = this.add.audio('victorysound', 0.7);
     this.playerbadaboom = this.add.audio('playerexplosionaudio', 0.3);
     this.enemybadaboom = this.add.audio('enemyexplosionaudio', 0.3);
 
