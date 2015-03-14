@@ -155,11 +155,11 @@ BasicGame.Game.prototype = {
 
     // sound effects
     this.bulletsound = this.add.audio('enemyfireaudio', 0.2);
-    this.lasersound = this.add.audio('playerfireaudio', 0.2);
-    this.playerlosesound = this.add.audio('playerdeathaudio', 0.7);
-    this.playerwinsound = this.add.audio('victorysound', 0.7);
+    this.lasersound = this.add.audio('playerfireaudio', 0.1);
+    this.playerlosesound = this.add.audio('playerdeathaudio', 0.4);
+    this.playerwinsound = this.add.audio('victorysound', 0.4);
     this.playerbadaboom = this.add.audio('playerexplosionaudio', 0.3);
-    this.enemybadaboom = this.add.audio('enemyexplosionaudio', 0.3);
+    this.enemybadaboom = this.add.audio('enemyexplosionaudio', 0.1);
 
   },
 
@@ -286,7 +286,7 @@ BasicGame.Game.prototype = {
     {
       this.player.kill();
       this.enemybullets.callAll('kill');
-
+      
       this.stateText.text=" GAME OVER \n Click to restart";
       this.stateText.visible = true;
 
@@ -317,9 +317,9 @@ BasicGame.Game.prototype = {
       this.score += 1000;
       this.scoreText.text = this.scoreString + this.score;
 
-      //  Fix for persisting enemy this.bullets
+      //  fix for persisting bullets
       this.enemybullets.callAll('kill');
-
+      
       this.stateText.text = " You Won, \n Click to restart";
       this.stateText.visible = true;
       this.playerwinsound.play();
@@ -434,6 +434,9 @@ BasicGame.Game.prototype = {
 
     // this fixes a bug with onLoop where aliens descend mid-tween on successive restarts
     this.tween.stop();
+
+    // fixes persisting player bullets
+    this.bullets.callAll('kill');
 
     //  And brings the this.aliens back from the dead :)
     this.aliens.removeAll();
