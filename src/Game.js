@@ -342,10 +342,12 @@ BasicGame.Game.prototype = {
     var explosion = this.explosions.getFirstExists(false);
     explosion.reset(this.player.body.x, this.player.body.y);
     explosion.play('kaboom', 30, false, true);
+
+    // play explosions for enemy and player
     this.enemybadaboom.play();
     this.playerbadaboom.play();
 
-    //  Reduce this.player this.lives by 1
+    //  Reduce player lives by 1
     live = this.lives.getFirstAlive();
 
     if (live)
@@ -369,6 +371,32 @@ BasicGame.Game.prototype = {
 
       //  The "click to restart" handler
       this.input.onTap.addOnce(this.restart,this);
+    }
+
+    // if this collision killed the last enemy
+    if (this.aliens.countLiving() == 0)
+    {
+      this.score += 1000;
+      this.scoreText.text = this.scoreString + this.score;
+
+      //  fix for persisting bullets
+      this.enemybullets.callAll('kill');
+      
+      this.stateText.text = " You Won, \n Click to restart";
+      this.stateText.visible = true;
+
+      this.playerwinsound.play();
+
+      // make the aliens faster
+      this.alientweenspeed -= 200;
+      this.aliendescendspeed += 5;
+
+      // stop futher offscreen checks
+      this.offscreenEnemiesCheck = false;
+
+      //  The "click to restart" handler
+      this.input.onTap.addOnce(this.restart,this);
+
     }
 	
   },
