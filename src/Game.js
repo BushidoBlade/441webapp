@@ -46,6 +46,7 @@ BasicGame.Game = function (game) {
   this.livingEnemies = [];
   this.tween;
 
+  // audio variables
   this.backgroundmusic;
   this.bulletsound;
   this.lasersound;
@@ -62,6 +63,10 @@ BasicGame.Game = function (game) {
   this.aliendescendspeed = 0;
 
   this.screenbounds;
+  this.playerxbounds_left = false;
+  this.playerxbounds_right = false;
+  this.playerybounds_upper = false;
+  this.playerybounds_lower = false;
 
 };
 
@@ -213,23 +218,25 @@ BasicGame.Game.prototype = {
 
     if (this.player.alive)
     {
+
       //  Reset the player, then check for movement keys
       this.player.body.velocity.setTo(0, 0);
+      this.checkbounds();
 
-      if (this.cursors.left.isDown)
+      if (this.cursors.left.isDown && this.playerxbounds_left)
       {
         this.player.body.velocity.x = -200;
       }
-      else if (this.cursors.right.isDown)
+      else if (this.cursors.right.isDown && this.playerxbounds_right)
       {
         this.player.body.velocity.x = 200;
       }
 
-      if (this.cursors.up.isDown)
+      if (this.cursors.up.isDown && this.playerybounds_upper)
       {
         this.player.body.velocity.y = -200;
       }
-      else if (this.cursors.down.isDown)
+      else if (this.cursors.down.isDown && this.playerybounds_lower)
       {
         this.player.body.velocity.y = 200;
       }
@@ -250,6 +257,36 @@ BasicGame.Game.prototype = {
       this.physics.arcade.overlap(this.enemybullets, this.player, this.enemyHitsplayer, null, this);
       this.physics.arcade.overlap(this.aliens, this.player, this.enemyCollideplayer, null, this);
     }
+
+
+
+
+      console.log(this.player.y);
+
+  },
+
+  checkbounds: function () {
+
+    if(this.player.x <= 20)
+      this.playerxbounds_left = false;
+    else
+      this.playerxbounds_left = true;
+
+    if(this.player.x >= this.game.width-20)
+      this.playerxbounds_right = false;
+    else
+      this.playerxbounds_right = true;
+
+    if(this.player.y <= 20)
+      this.playerybounds_upper = false;
+    else
+      this.playerybounds_upper = true;
+
+    if(this.player.y >= this.game.height-20)
+      this.playerybounds_lower = false;
+    else 
+      this.playerybounds_lower = true;
+
 
   },
 
