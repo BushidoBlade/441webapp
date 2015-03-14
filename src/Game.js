@@ -44,6 +44,22 @@ BasicGame.Game = function (game) {
   this.firingTimer = 0;
   this.stateText;
   this.livingEnemies = [];
+  this.tween;
+
+  this.backgroundmusic;
+  this.bulletsound;
+  this.lasersound;
+  this.playerlosesound;
+  this.playerwinsound;
+  this.playerbadaboom;
+  this.enemybadaboom;
+  this.enemydeathsound;
+
+  this.autofire = false;
+
+  // these variables allow for increasing difficulty
+  this.alientweenspeed = 0;
+  this.aliendescendspeed = 0;
 
 };
 
@@ -68,7 +84,7 @@ BasicGame.Game.prototype = {
     this.bullets.setAll('outOfBoundsKill', true);
     this.bullets.setAll('checkWorldBounds', true);
 
-    // The enemy's this.bullets
+    // The enemy's bullets
     this.enemybullets = this.add.group();
     this.enemybullets.enableBody = true;
     this.enemybullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -82,6 +98,10 @@ BasicGame.Game.prototype = {
     this.player = this.add.sprite(400, 500, 'ship');
     this.player.anchor.setTo(0.5, 0.5);
     this.physics.enable(this.player, Phaser.Physics.ARCADE);
+    this.player.inputEnabled = true;
+    this.player.input.enableDrag();
+    this.player.events.onDragStart.add(this.onDragStart, this);
+    this.player.events.onDragStop.add(this.onDragStop, this);
 
     //  The baddies!
     this.aliens = this.add.group();
@@ -129,6 +149,18 @@ BasicGame.Game.prototype = {
     fullscreen.pivot.x = fullscreen.width;
     fullscreen.pivot.y = fullscreen.height;
 
+    // background music
+    this.backgroundmusic = this.add.audio('music');
+    this.backgroundmusic.play('', 0, 0.5, true);
+
+    // sound effects
+    this.bulletsound = this.add.audio('enemyfireaudio', 0.5);
+    this.lasersound = this.add.audio('playerfireaudio', 0.4);
+    this.playerlosesound = this.add.audio('playerdeathaudio', 0.9);
+    this.playerwinsound = this.add.audio('victorysound');
+    this.playerbadaboom = this.add.audio('playerexplosionaudio', 0.3);
+    this.enemybadaboom = this.add.audio('enemyexplosionaudio', 0.3);
+
   },
 
   createaliens: function () {
@@ -149,10 +181,10 @@ BasicGame.Game.prototype = {
     this.aliens.y = 50;
 
     //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
-    var tween = this.add.tween(this.aliens).to( { x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+    this.tween = this.add.tween(this.aliens).to( { x: 200 }, 2000 + this.alientweenspeed, Phaser.Easing.Linear.None, true, 0, 1000, true);
 
     //  When the tween loops it calls descend
-    tween.onLoop.add(this.descend, this);
+    this.tween.onLoop.add(this.descend, this);
 
   },
 
@@ -166,7 +198,7 @@ BasicGame.Game.prototype = {
 
   descend: function () {
 
-    this.aliens.y += 10;
+    this.aliens.y += 10 + this.aliendescendspeed;
 
   },
 
@@ -189,8 +221,17 @@ BasicGame.Game.prototype = {
         this.player.body.velocity.x = 200;
       }
 
+      if (this.cursors.up.isDown)
+      {
+        this.player.body.velocity.y = -200;
+      }
+      else if (this.cursors.down.isDown)
+      {
+        this.player.body.velocity.y = 200;
+      }
+
       //  Firing?
-      if (this.fireButton.isDown)
+      if (this.fireButton.isDown || this.autofire)
       {
         this.fireBullet();
       }
@@ -208,6 +249,18 @@ BasicGame.Game.prototype = {
 
   },
 
+  onDragStart: function (player, pointer) {
+
+    this.autofire = true;
+
+  },
+
+  onDragStop: function (player, pointer) {
+
+    this.autofire = false;
+
+  },
+
   enemyCollideplayer: function (player, alien) {
 
     //  Kill the alien the this.player collided with
@@ -217,6 +270,8 @@ BasicGame.Game.prototype = {
     var explosion = this.explosions.getFirstExists(false);
     explosion.reset(this.player.body.x, this.player.body.y);
     explosion.play('kaboom', 30, false, true);
+    this.enemybadaboom.play();
+    this.playerbadaboom.play();
 
     //  Reduce this.player this.lives by 1
     live = this.lives.getFirstAlive();
@@ -255,6 +310,7 @@ BasicGame.Game.prototype = {
     var explosion = this.explosions.getFirstExists(false);
     explosion.reset(alien.body.x, alien.body.y);
     explosion.play('kaboom', 30, false, true);
+    this.enemybadaboom.play();
 
     if (this.aliens.countLiving() == 0)
     {
@@ -263,8 +319,14 @@ BasicGame.Game.prototype = {
 
       //  Fix for persisting enemy this.bullets
       this.enemybullets.callAll('kill');
+
       this.stateText.text = " You Won, \n Click to restart";
       this.stateText.visible = true;
+      this.playerwinsound.play();
+
+      // make the aliens faster
+      this.alientweenspeed -= 200;
+      this.aliendescendspeed += 5;
 
       //  The "click to restart" handler
       this.input.onTap.addOnce(this.restart,this);
@@ -287,12 +349,15 @@ BasicGame.Game.prototype = {
     var explosion = this.explosions.getFirstExists(false);
     explosion.reset(this.player.body.x, this.player.body.y);
     explosion.play('kaboom', 30, false, true);
+    this.playerbadaboom.play();
 
     // When the this.player dies
     if (this.lives.countLiving() < 1)
     {
       this.player.kill();
       this.enemybullets.callAll('kill');
+      
+      this.playerlosesound.play();
 
       this.stateText.text=" GAME OVER \n Click to restart";
       this.stateText.visible = true;
@@ -326,7 +391,7 @@ BasicGame.Game.prototype = {
       var shooter=this.livingEnemies[random];
       //  And fire the bullet from this enemy
       this.enemyBullet.reset(shooter.body.x, shooter.body.y);
-
+      this.bulletsound.play();
       this.physics.arcade.moveToObject(this.enemyBullet,this.player,120);
       this.firingTimer = this.time.now + 2000;
     }
@@ -347,6 +412,7 @@ BasicGame.Game.prototype = {
         bullet.reset(this.player.x, this.player.y + 8);
         bullet.body.velocity.y = -400;
         this.bulletTime = this.time.now + 200;
+        this.lasersound.play();
       }
     }
 
@@ -365,6 +431,9 @@ BasicGame.Game.prototype = {
     
     //  Resets the life count
     this.lives.callAll('revive');
+
+    // this fixes a bug with onLoop where aliens descend mid-tween on successive restarts
+    this.tween.stop();
 
     //  And brings the this.aliens back from the dead :)
     this.aliens.removeAll();

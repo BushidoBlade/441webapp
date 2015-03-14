@@ -30,14 +30,13 @@ BasicGame.Boot.prototype = {
 
     this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-    //this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
-    //this.scale.fullScreenScaleMode = Phaser.ScaleManager.RESIZE;
+    this.scale.windowConstraints.bottom = "visual";
+    this.scale.pageAlignHorizontally = true;
 
     if (this.game.device.desktop) {
     } else {            
       //this.scale.forceOrientation(true, false);
       this.scale.forceOrientation(false, true);
-      //this.scale.maxHeight = 800;
       this.scale.enterIncorrectOrientation
         .add(this.enterIncorrectOrientation, this);
       this.scale.leaveIncorrectOrientation
