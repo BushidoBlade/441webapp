@@ -40,13 +40,13 @@ BasicGame.Preloader.prototype = {
     this.load.image('starfield', 'assets/games/invaders/starfield.png');
     this.load.spritesheet('invader', 'assets/games/invaders/invader32x32x4.png', 32, 32);
     this.load.spritesheet('kaboom', 'assets/games/invaders/explode.png', 128, 128);
-    this.load.audio('music', 'assets/audio/music.mp3');
+    this.load.audio('music', 'assets/audio/music.wav');
     this.load.audio('enemyfireaudio', 'assets/audio/enemyfire.wav');
     this.load.audio('playerfireaudio', 'assets/audio/playerfire.wav');
-    this.load.audio('playerdeathaudio', 'assets/audio/playerdeath.mp3');
+    this.load.audio('playerdeathaudio', 'assets/audio/playerdeath.wav');
     this.load.audio('playerexplosionaudio', 'assets/audio/playerexplosion.wav');
     this.load.audio('enemyexplosionaudio', 'assets/audio/enemyexplosion.wav');
-    this.load.audio('victorysound', 'assets/audio/victory.mp3');
+    this.load.audio('victorysound', 'assets/audio/victory.wav');
 
   },
 
